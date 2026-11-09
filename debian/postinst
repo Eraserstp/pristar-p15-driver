@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "configure" ]; then
+    # The LE helper needs raw HCI access; it runs as CUPS' lp user.
+    if command -v setcap >/dev/null 2>&1; then
+        setcap cap_net_raw+ep /usr/lib/pristar-p15/p15-leconnect || true
+    fi
+
+    # Create/update the queue if a P15-family device is already known to BlueZ.
+    if [ -x /usr/sbin/pristar-p15-setup ]; then
+        /usr/sbin/pristar-p15-setup --auto >/dev/null 2>&1 || true
+    fi
+fi
+
+#DEBHELPER#
+
+exit 0

@@ -1,0 +1,27 @@
+Source: pristar-p15-driver
+Section: utils
+Priority: optional
+Maintainer: Pristar P15 Driver Maintainers <root@localhost>
+Build-Depends: debhelper-compat (= 13), gcc, libc6-dev
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+Homepage: https://github.com/Eraserstp/pristar-p15-driver
+
+Package: pristar-p15-driver
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, cups, cups-filters, python3,
+ python3-dbus, python3-gi, python3-pil, bluez, libbluetooth3, libcap2-bin
+Recommends: system-config-printer
+Description: CUPS driver for the Pristar/Marklife P15 Bluetooth label printer
+ The Pristar P15 (a Marklife P15 clone) is a 203 dpi Bluetooth LE label
+ printer using the L11 binary protocol.  This package provides:
+ .
+  * a CUPS filter that converts CUPS raster pages to L11 bitmap commands;
+  * a CUPS backend that sends the job over BLE with credit-based flow
+    control;
+  * a small setcap helper that creates the LE link (BlueZ otherwise picks
+    BR/EDR for this printer and GATT never appears);
+  * a PPD with the common 22-50 mm label sizes.
+ .
+ Once installed, the printer appears as a normal CUPS queue and can be used
+ from any application's print dialog.

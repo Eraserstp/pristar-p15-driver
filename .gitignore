@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+out/
+dist/
+p15-leconnect
+*.deb
+*.ddeb
+*.buildinfo
+*.changes
+debian/.debhelper/
+debian/pristar-p15-driver/
+debian/debhelper-build-stamp
+debian/files
+debian/*.substvars

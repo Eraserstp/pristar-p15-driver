@@ -1,0 +1,120 @@
+#!/usr/bin/python3
+"""CUPS filter: application/vnd.cups-raster -> Pristar P15 L11 job stream.
+
+CUPS calls: p15-raster job-id user title copies options [file]
+The stream on stdout is consumed by the p15 backend, which sends it over BLE.
+"""
+
+import os
+import shlex
+import sys
+
+LIB = os.environ.get("PRISTAR_P15_LIB", "/usr/lib/pristar-p15")
+if LIB not in sys.path:
+    sys.path.insert(0, LIB)
+
+from pristar_p15 import config, image, protocol, raster  # noqa: E402
+
+
+def log(msg):
+    print("DEBUG: " + msg, file=sys.stderr, flush=True)
+
+
+def error(msg):
+    print("ERROR: " + msg, file=sys.stderr, flush=True)
+
+
+def parse_options(arg):
+    try:
+        parts = shlex.split(arg or "")
+    except ValueError:
+        parts = (arg or "").split()
+    opts = {}
+    for part in parts:
+        if "=" in part:
+            key, value = part.split("=", 1)
+            opts[key] = value.strip("\"'")
+    return opts
+
+
+def get_int(opts, cfg, key, cfg_key, default):
+    raw = opts.get(key, cfg.get(cfg_key, default))
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        return int(default)
+
+
+def main():
+    argv = sys.argv
+    if len(argv) < 6:
+        error("expected at least 6 arguments")
+        return 1
+
+    job_id = argv[1]
+    options = parse_options(argv[5] if len(argv) > 5 else "")
+    filename = argv[6] if len(argv) > 6 else None
+
+    cfg = config.load()
+    density = max(1, min(3, get_int(options, cfg, "P15Density", "density", 2)))
+    feed = max(0, min(255, get_int(options, cfg, "P15FeedDots", "feed_dots", 100)))
+    head_margin = max(0, get_int(options, cfg, "P15HeadMargin", "head_margin", 2))
+    feed_start = max(0, get_int(options, cfg, "P15FeedStart", "feed_start", 2))
+    feed_end = max(0, get_int(options, cfg, "P15FeedEnd", "feed_end", 6))
+    rotation = get_int(options, cfg, "P15Rotate", "rotation", 270)
+    x_shift = get_int(options, cfg, "P15XShift", "x_shift", 0) \
+        if "x_shift" in cfg else 0
+
+    paper = options.get("P15PaperType", cfg.get("paper_type", "gap")).lower()
+    paper = "continuous" if paper.startswith("cont") else "gap"
+
+    dither = options.get("P15Dither", cfg.get("dither", "fs")).lower()
+    if dither in ("threshold", "thr", "none"):
+        dither = "none" if dither == "none" else "threshold"
+    else:
+        dither = "fs"
+
+    log(f"job {job_id}: density={density} paper={paper} dither={dither} "
+        f"margins head={head_margin} feed={feed_start}/{feed_end} "
+        f"rotate={rotation}")
+
+    if filename and filename != "-":
+        inp = open(filename, "rb")
+    else:
+        inp = sys.stdin.buffer
+
+    out = sys.stdout.buffer
+    pages = 0
+    try:
+        for page in raster.read_pages(inp):
+            packed, width, height = image.prepare_page(
+                page, head_margin=head_margin, feed_start=feed_start,
+                feed_end=feed_end, rotation=rotation, dither=dither,
+                x_shift=x_shift)
+            stream = protocol.page(packed, width, height, density=density,
+                                   paper_type=paper, feed=feed)
+            out.write(stream)
+            pages += 1
+            log(f"page {pages}: raster {page.width}x{page.height} "
+                f"{page.bits_per_pixel}bpp -> bitmap {width}x{height}, "
+                f"{len(stream)}B")
+        out.flush()
+    except raster.RasterError as e:
+        error(f"raster: {e}")
+        return 1
+    except Exception as e:  # noqa: BLE001
+        error(f"{type(e).__name__}: {e}")
+        return 1
+    finally:
+        if inp is not sys.stdin.buffer:
+            inp.close()
+
+    if pages == 0:
+        error("no pages in raster input")
+        return 1
+    log(f"done, {pages} page(s)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

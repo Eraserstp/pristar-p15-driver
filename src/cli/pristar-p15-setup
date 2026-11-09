@@ -1,0 +1,79 @@
+#!/usr/bin/python3
+"""Configure the Pristar P15 CUPS queue.
+
+Usage:
+    pristar-p15-setup                 # auto-detect a P15-family device
+    pristar-p15-setup --mac AA:BB:CC:DD:EE:FF
+    pristar-p15-setup --queue MyPrinter
+
+Must be run as root (or via sudo).  It writes /etc/pristar-p15.conf and
+creates/updates the CUPS queue.  The queue is not made the system default.
+"""
+
+import argparse
+import os
+import subprocess
+import sys
+
+LIB = os.environ.get("PRISTAR_P15_LIB", "/usr/lib/pristar-p15")
+if LIB not in sys.path:
+    sys.path.insert(0, LIB)
+
+from pristar_p15 import device  # noqa: E402
+
+PPD = "/usr/share/cups/model/pristar-p15.ppd"
+CONF = "/etc/pristar-p15.conf"
+
+
+def run(cmd, check=True):
+    return subprocess.run(cmd, capture_output=True, text=True, check=check)
+
+
+def write_conf(mac):
+    text = "[device]\nmac = %s\nhelper = /usr/lib/pristar-p15/p15-leconnect\n" % mac
+    with open(CONF, "w", encoding="utf-8") as f:
+        f.write(text)
+    os.chmod(CONF, 0o644)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--mac", help="Bluetooth MAC address")
+    ap.add_argument("--queue", default="Pristar-P15", help="CUPS queue name")
+    ap.add_argument("--auto", action="store_true",
+                    help="no prompts; do nothing if no printer is known")
+    args = ap.parse_args()
+
+    if os.geteuid() != 0:
+        print("ERROR: run as root (sudo pristar-p15-setup)", file=sys.stderr)
+        return 1
+
+    mac, name = device.find_p15(args.mac)
+    if not mac:
+        msg = ("Pristar P15 not found in the Bluetooth device list.\n"
+               "Pair/turn on the printer, then run this command again:\n"
+               "    sudo pristar-p15-setup")
+        if args.auto:
+            print(msg)
+            return 0
+        print("ERROR: " + msg, file=sys.stderr)
+        return 1
+
+    print(f"Using {mac}" + (f" ({name})" if name else ""))
+    write_conf(mac)
+
+    cmd = ["lpadmin", "-p", args.queue, "-E", "-v", f"p15:///{mac}", "-P", PPD,
+           "-D", "Pristar P15 Label Printer"]
+    r = run(cmd, check=False)
+    if r.returncode != 0:
+        print("ERROR: lpadmin failed:\n" + (r.stderr or r.stdout),
+              file=sys.stderr)
+        return 1
+
+    print(f"CUPS queue '{args.queue}' is ready.")
+    print("Select it in the print dialog; label size defaults to 40x12 mm.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,9 @@
+pristar-p15-driver (0.1.0) unstable; urgency=medium
+
+  * Initial release.
+  * CUPS filter (CUPS raster -> L11 bitmap commands) and backend (BLE GATT
+    with credit-based flow control).
+  * p15-leconnect helper (cap_net_raw) to force the LE bearer.
+  * PPD with 22x12 .. 50x15 mm label sizes, density and paper-type options.
+
+ -- Pristar P15 Driver Maintainers <root@localhost>  Mon, 09 Nov 2026 20:00:00 +0500

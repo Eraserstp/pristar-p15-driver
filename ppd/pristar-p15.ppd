@@ -1,0 +1,100 @@
+*PPD-Adobe: "4.3"
+*FormatVersion: "4.3"
+*FileVersion: "0.1.0"
+*LanguageVersion: English
+*LanguageEncoding: ISOLatin1
+*PCFileName: "PRISTAR15.PPD"
+*Manufacturer: "Pristar"
+*Product: "(P15)"
+*ModelName: "Pristar P15"
+*ShortNickName: "Pristar P15"
+*NickName: "Pristar P15 Label Printer"
+*PSVersion: "(3010.000) 0"
+*LanguageLevel: "3"
+*ColorDevice: True
+*DefaultColorSpace: Gray
+*FileSystem: False
+*Throughput: "1"
+*LandscapeOrientation: Plus90
+*TTRasterizer: Type42
+*1284DeviceID: "MFG:Pristar;MDL:P15;CMD:P15"
+*cupsColorSpace: 3
+*cupsFilter2: "application/vnd.cups-raster application/vnd.pristar.p15 0 p15-raster"
+*OpenUI *Resolution/Output Resolution: PickOne
+*DefaultResolution: 203dpi
+*Resolution 203dpi/203 dpi: "<</HWResolution[203 203]>>setpagedevice"
+*CloseUI: *Resolution
+
+*OpenUI *PageSize/Page Size: PickOne
+*DefaultPageSize: 12x40mmRotated.Fullbleed
+*PageSize 12x22mmRotated.Fullbleed/22x12 mm: "<</PageSize[62.36 34.02]/ImagingBBox null>>setpagedevice"
+*PageSize 14x22mmRotated.Fullbleed/22x14 mm: "<</PageSize[62.36 39.69]/ImagingBBox null>>setpagedevice"
+*PageSize 15x26mmRotated.Fullbleed/26x15 mm: "<</PageSize[73.7 42.52]/ImagingBBox null>>setpagedevice"
+*PageSize 12x30mmRotated.Fullbleed/30x12 mm: "<</PageSize[85.04 34.02]/ImagingBBox null>>setpagedevice"
+*PageSize 14x30mmRotated.Fullbleed/30x14 mm: "<</PageSize[85.04 39.69]/ImagingBBox null>>setpagedevice"
+*PageSize 15x30mmRotated.Fullbleed/30x15 mm: "<</PageSize[85.04 42.52]/ImagingBBox null>>setpagedevice"
+*PageSize 12x40mmRotated.Fullbleed/40x12 mm: "<</PageSize[113.39 34.02]/ImagingBBox null>>setpagedevice"
+*PageSize 14x40mmRotated.Fullbleed/40x14 mm: "<</PageSize[113.39 39.69]/ImagingBBox null>>setpagedevice"
+*PageSize 15x40mmRotated.Fullbleed/40x15 mm: "<</PageSize[113.39 42.52]/ImagingBBox null>>setpagedevice"
+*PageSize 15x50mmRotated.Fullbleed/50x15 mm: "<</PageSize[141.73 42.52]/ImagingBBox null>>setpagedevice"
+*CloseUI: *PageSize
+*OpenUI *PageRegion/Page Region: PickOne
+*DefaultPageRegion: 12x40mmRotated.Fullbleed
+*PageRegion 12x22mmRotated.Fullbleed/22x12 mm: "<</PageSize[62.36 34.02]/ImagingBBox null>>setpagedevice"
+*PageRegion 14x22mmRotated.Fullbleed/22x14 mm: "<</PageSize[62.36 39.69]/ImagingBBox null>>setpagedevice"
+*PageRegion 15x26mmRotated.Fullbleed/26x15 mm: "<</PageSize[73.7 42.52]/ImagingBBox null>>setpagedevice"
+*PageRegion 12x30mmRotated.Fullbleed/30x12 mm: "<</PageSize[85.04 34.02]/ImagingBBox null>>setpagedevice"
+*PageRegion 14x30mmRotated.Fullbleed/30x14 mm: "<</PageSize[85.04 39.69]/ImagingBBox null>>setpagedevice"
+*PageRegion 15x30mmRotated.Fullbleed/30x15 mm: "<</PageSize[85.04 42.52]/ImagingBBox null>>setpagedevice"
+*PageRegion 12x40mmRotated.Fullbleed/40x12 mm: "<</PageSize[113.39 34.02]/ImagingBBox null>>setpagedevice"
+*PageRegion 14x40mmRotated.Fullbleed/40x14 mm: "<</PageSize[113.39 39.69]/ImagingBBox null>>setpagedevice"
+*PageRegion 15x40mmRotated.Fullbleed/40x15 mm: "<</PageSize[113.39 42.52]/ImagingBBox null>>setpagedevice"
+*PageRegion 15x50mmRotated.Fullbleed/50x15 mm: "<</PageSize[141.73 42.52]/ImagingBBox null>>setpagedevice"
+*CloseUI: *PageRegion
+*DefaultImageableArea: 12x40mmRotated.Fullbleed
+*ImageableArea 12x22mmRotated.Fullbleed/22x12 mm: "0 0 62.36 34.02"
+*ImageableArea 14x22mmRotated.Fullbleed/22x14 mm: "0 0 62.36 39.69"
+*ImageableArea 15x26mmRotated.Fullbleed/26x15 mm: "0 0 73.7 42.52"
+*ImageableArea 12x30mmRotated.Fullbleed/30x12 mm: "0 0 85.04 34.02"
+*ImageableArea 14x30mmRotated.Fullbleed/30x14 mm: "0 0 85.04 39.69"
+*ImageableArea 15x30mmRotated.Fullbleed/30x15 mm: "0 0 85.04 42.52"
+*ImageableArea 12x40mmRotated.Fullbleed/40x12 mm: "0 0 113.39 34.02"
+*ImageableArea 14x40mmRotated.Fullbleed/40x14 mm: "0 0 113.39 39.69"
+*ImageableArea 15x40mmRotated.Fullbleed/40x15 mm: "0 0 113.39 42.52"
+*ImageableArea 15x50mmRotated.Fullbleed/50x15 mm: "0 0 141.73 42.52"
+*DefaultPaperDimension: 12x40mmRotated.Fullbleed
+*PaperDimension 12x22mmRotated.Fullbleed/22x12 mm: "62.36 34.02"
+*PaperDimension 14x22mmRotated.Fullbleed/22x14 mm: "62.36 39.69"
+*PaperDimension 15x26mmRotated.Fullbleed/26x15 mm: "73.7 42.52"
+*PaperDimension 12x30mmRotated.Fullbleed/30x12 mm: "85.04 34.02"
+*PaperDimension 14x30mmRotated.Fullbleed/30x14 mm: "85.04 39.69"
+*PaperDimension 15x30mmRotated.Fullbleed/30x15 mm: "85.04 42.52"
+*PaperDimension 12x40mmRotated.Fullbleed/40x12 mm: "113.39 34.02"
+*PaperDimension 14x40mmRotated.Fullbleed/40x14 mm: "113.39 39.69"
+*PaperDimension 15x40mmRotated.Fullbleed/40x15 mm: "113.39 42.52"
+*PaperDimension 15x50mmRotated.Fullbleed/50x15 mm: "141.73 42.52"
+
+*OpenUI *P15Density/Print Density: PickOne
+*DefaultP15Density: 2
+*P15Density 1/Light: ""
+*P15Density 2/Normal: ""
+*P15Density 3/Dark: ""
+*CloseUI: *P15Density
+*OpenUI *P15PaperType/Paper Type: PickOne
+*DefaultP15PaperType: Gap
+*P15PaperType Gap/Label with gap: ""
+*P15PaperType Continuous/Continuous: ""
+*CloseUI: *P15PaperType
+*OpenUI *P15Dither/Image Dithering: PickOne
+*DefaultP15Dither: Threshold
+*P15Dither Threshold/Threshold (text, crisp): ""
+*P15Dither FS/Floyd-Steinberg (photos): ""
+*P15Dither None/None: ""
+*CloseUI: *P15Dither
+*OpenUI *P15FeedDots/Continuous Feed (dots): PickOne
+*DefaultP15FeedDots: 100
+*P15FeedDots 100/100: ""
+*P15FeedDots 150/150: ""
+*P15FeedDots 200/200: ""
+*CloseUI: *P15FeedDots
+

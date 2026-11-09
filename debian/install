@@ -1,0 +1,5 @@
+src/pristar_p15/ /usr/lib/pristar-p15/
+ppd/pristar-p15.ppd /usr/share/cups/model/
+src/filter/p15-raster /usr/lib/cups/filter/
+src/backend/p15 /usr/lib/cups/backend/
+src/cli/pristar-p15-setup /usr/sbin/

@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_build:
+	gcc -O2 -Wall -Wextra -o p15-leconnect src/helper/p15-leconnect.c -ldl
+
+override_dh_auto_install:
+	dh_install
+	install -D -m 0755 p15-leconnect \
+		debian/pristar-p15-driver/usr/lib/pristar-p15/p15-leconnect
+
+override_dh_auto_clean:
+	rm -f p15-leconnect
+	dh_auto_clean

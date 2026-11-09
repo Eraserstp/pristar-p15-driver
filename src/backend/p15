@@ -1,0 +1,124 @@
+#!/usr/bin/python3
+"""CUPS backend for the Pristar P15.
+
+Device URI: p15:///<MAC>   (or p15://auto to auto-detect a P15-family device)
+
+CUPS runs backends as user "lp"; the p15-leconnect helper carries
+cap_net_raw so it can create the LE link, and BlueZ D-Bus GATT is reachable
+for normal users.  Jobs are serialised with a lock file because one BLE link
+can only carry one job at a time.
+"""
+
+import fcntl
+import os
+import sys
+
+LIB = os.environ.get("PRISTAR_P15_LIB", "/usr/lib/pristar-p15")
+if LIB not in sys.path:
+    sys.path.insert(0, LIB)
+
+from pristar_p15 import ble, config, device  # noqa: E402
+
+
+def log(msg):
+    print("DEBUG: " + msg, file=sys.stderr, flush=True)
+
+
+def error(msg):
+    print("ERROR: " + msg, file=sys.stderr, flush=True)
+
+
+def parse_uri(uri):
+    """p15:///<MAC> -> <MAC>; p15://auto -> None."""
+    if not uri:
+        return None
+    if uri.startswith("p15://"):
+        rest = uri[6:]
+    elif uri.startswith("p15:"):
+        rest = uri[4:]
+    else:
+        rest = uri
+    rest = rest.lstrip("/").split("/")[0].split("?")[0]
+    if not rest or rest.lower() in ("auto", "default", "any"):
+        return None
+    return rest
+
+
+def acquire_lock():
+    for path in ("/run/lock/pristar-p15.lock", "/tmp/pristar-p15.lock"):
+        try:
+            fd = open(path, "w")
+            fcntl.flock(fd, fcntl.LOCK_EX)
+            return fd
+        except OSError:
+            continue
+    return None
+
+
+def main():
+    argv = sys.argv
+    cfg = config.load()
+
+    # cups-deviced calls backends without job arguments to enumerate devices.
+    if len(argv) < 6 or (len(argv) > 1 and argv[1] in ("--list", "-l")):
+        mac = cfg["mac"] or (device.find_p15()[0] or "")
+        target = mac or "auto"
+        print(f'direct p15:///{target} "Pristar" "Pristar P15" '
+              f'"Pristar P15 (Bluetooth LE)"')
+        return 0
+
+    job_id = argv[1]
+    uri = os.environ.get("DEVICE_URI", "")
+    mac = parse_uri(uri) or cfg["mac"]
+    if not mac:
+        mac, _name = device.find_p15()
+    if not mac:
+        error("printer MAC is not configured; run: sudo pristar-p15-setup")
+        return 1
+    log(f"job {job_id}: uri={uri or '(none)'} mac={mac}")
+
+    data = sys.stdin.buffer.read()
+    if not data:
+        error("empty job stream")
+        return 2
+
+    lock = acquire_lock()
+    if lock is None:
+        log("warning: could not create a lock file")
+
+    printer = ble.P15Printer(
+        mac=mac,
+        helper=cfg["helper"],
+        adapter=cfg["adapter"],
+        packet=config.as_int(cfg, "packet", 95),
+        tick_ms=config.as_int(cfg, "tick_ms", 30),
+        connect_timeout=config.as_int(cfg, "connect_timeout", 20),
+        keep_alive=config.as_bool(cfg, "keep_alive", False),
+    )
+
+    ok = False
+    try:
+        printer.connect()
+        ok = printer.send(data)
+    except ble.BleError as e:
+        error(str(e))
+    except Exception as e:  # noqa: BLE001
+        error(f"{type(e).__name__}: {e}")
+    finally:
+        try:
+            printer.disconnect()
+        except Exception:  # noqa: BLE001
+            pass
+        if lock is not None:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_UN)
+                lock.close()
+            except OSError:
+                pass
+
+    log("job finished: " + ("ok" if ok else "failed"))
+    return 0 if ok else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
